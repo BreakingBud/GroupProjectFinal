@@ -65,7 +65,7 @@ def decadal_seasonal_trends():
                         color_continuous_scale=px.colors.sequential.YlOrRd)
     st.plotly_chart(fig_decade)
 
-# Function for Interactive Global Temperature Map
+#function for interactive map
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
@@ -81,9 +81,22 @@ def global_temp_map():
                         color="AverageTemperature",
                         hover_name="Country", 
                         animation_frame="year",
-                        color_continuous_scale=px.colors.sequential.OrRd)
+                        color_continuous_scale="Viridis",  # Changed to Viridis for better visual appeal
+                        projection="natural earth")  # Changed projection for aesthetic variation
+
+    # Customizing the layout
+    fig.update_layout(
+        title_text = 'Global Average Temperatures (1850 - Present)',
+        title_x = 0.5,
+        geo=dict(
+            showframe = False,
+            showcoastlines = False,
+            projection_type = 'equirectangular'
+        )
+    )
 
     st.plotly_chart(fig)
+
 
 #Function for When did global warming started?
 def global_warming_start():
