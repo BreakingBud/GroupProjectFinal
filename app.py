@@ -6,10 +6,13 @@ import plotly.express as px
 # Function to load and clean data
 @st.cache_data
 
+# Function to load and clean data
+@st.cache(allow_output_mutation=True)
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
     global_temp = pd.read_csv("GlobalTemperatures.csv")
+    global_temp_city = pd.read_csv("GlobalLandTemperaturesByMajorCity.csv")  # Load the city temperature data
 
     # Convert date strings to datetime objects and extract year and month
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
@@ -19,6 +22,9 @@ def load_data():
     global_temp['year'] = global_temp['dt'].dt.year
     global_temp['month'] = global_temp['dt'].dt.month
     global_temp['decade'] = (global_temp['year'] // 10) * 10
+
+    global_temp_city['dt'] = pd.to_datetime(global_temp_city['dt'])
+    global_temp_city['year'] = global_temp_city['dt'].dt.year
 
     # Clean 'GlobalLandTemperaturesByCountry.csv'
     global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
@@ -31,9 +37,15 @@ def load_data():
     # Calculate average temperature for each country by year
     global_temp_country_avg = global_temp_country_clear.groupby(['Country', 'year'])['AverageTemperature'].mean().reset_index()
 
-    return global_temp_country_avg, global_temp
+    # Preprocess the city temperature data
+    global_temp_city = global_temp_city[global_temp_city['year'] >= 1850]  # Filter out records before 1850
+    global_temp_city_avg = global_temp_city.groupby(['City', 'Country', 'year'])['AverageTemperature'].mean().reset_index()
 
-global_temp_country_avg, global_temp = load_data()
+    return global_temp_country_avg, global_temp, global_temp_city_avg
+
+# Call the load_data function to load all datasets
+global_temp_country_avg, global_temp, global_temp_city_avg = load_data()
+
 
 # Function for Interactive Global Temperature Map
 def global_temp_map():
@@ -163,6 +175,38 @@ def global_warming_start():
     # Plot!
     st.plotly_chart(fig)
 
+# Function for Comparing City Temperature Trends
+def compare_city_temps():
+    st.title("Compare City Temperature Trends")
+
+    # Get the unique list of cities
+    cities = city_yearly_avg_temp['City'].unique()
+    
+    # Dropdown for selecting cities
+    city1 = st.selectbox('Select the first city to compare', cities)
+    city2 = st.selectbox('Select the second city to compare', cities, index=1)  # Default to second item in the list
+
+    # Filter the data for the selected cities
+    city1_data = city_yearly_avg_temp[city_yearly_avg_temp['City'] == city1]
+    city2_data = city_yearly_avg_temp[city_yearly_avg_temp['City'] == city2]
+
+    # Create the plot
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=city1_data['year'], y=city1_data['AverageTemperature'],
+                             mode='lines', name=city1))
+    fig.add_trace(go.Scatter(x=city2_data['year'], y=city2_data['AverageTemperature'],
+                             mode='lines', name=city2))
+
+    # Update the layout
+    fig.update_layout(
+        title=f'Temperature Trends: {city1} vs {city2}',
+        xaxis_title='Year',
+        yaxis_title='Average Temperature (°C)',
+        template='plotly_dark'
+    )
+
+    st.plotly_chart(fig)
+    
 #Function for thanks page
 def thanks_and_credits():
     st.title("Thanks and Credits")
@@ -182,6 +226,8 @@ elif page == "When Did Global Warming Start?":
     global_warming_start()
 elif page == "Global Temp Map":
     global_temp_map()
+elif page == "Compare City Temps":
+    compare_city_temps()
 elif page == "Thanks and Credits":
     thanks_and_credits()
 
