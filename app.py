@@ -4,14 +4,14 @@ import plotly.graph_objects as go
 import plotly.express as px
 import folium
 from streamlit_folium import folium_static
-import pandas as pd
 
 # Function to load and clean data
-@st.cache_data
+@st.cache(allow_output_mutation=True)
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
     global_temp = pd.read_csv("GlobalTemperatures.csv")
+    global_temp_city = pd.read_csv("GlobalLandTemperaturesByMajorCity.csv")
 
     # Convert date strings to datetime objects and extract year and month
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
@@ -22,6 +22,9 @@ def load_data():
     global_temp['month'] = global_temp['dt'].dt.month
     global_temp['decade'] = (global_temp['year'] // 10) * 10
 
+    global_temp_city['dt'] = pd.to_datetime(global_temp_city['dt'])
+    global_temp_city['year'] = global_temp_city['dt'].dt.year
+    
     # Clean 'GlobalLandTemperaturesByCountry.csv'
     global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
         ['Denmark', 'Antarctica', 'France', 'Europe', 'Netherlands',
@@ -33,9 +36,9 @@ def load_data():
     # Calculate average temperature for each country by year
     global_temp_country_avg = global_temp_country_clear.groupby(['Country', 'year'])['AverageTemperature'].mean().reset_index()
 
-    return global_temp_country_avg, global_temp
+    return global_temp_country_avg, global_temp, global_temp_city
 
-global_temp_country_avg, global_temp = load_data()
+global_temp_country_avg, global_temp, global_temp_city = load_data()
 
 # Function for Home Page
 def home():
@@ -68,7 +71,7 @@ def decadal_seasonal_trends():
                         color_continuous_scale=px.colors.sequential.YlOrRd)
     st.plotly_chart(fig_decade)
 
-#function for interactive map
+# Function for Interactive Global Temperature Map
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
@@ -76,18 +79,23 @@ def global_temp_map():
     m = folium.Map(location=[20, 0], zoom_start=2)
 
     # Adding data as circles
-    for idx, row in global_temp_country_avg.iterrows():
+    for idx, row in global_temp_city.iterrows():
+        # Convert latitude and longitude
+        latitude = float(row['Latitude'][:-1]) * (-1 if row['Latitude'][-1] == 'S' else 1)
+        longitude = float(row['Longitude'][:-1]) * (-1 if row['Longitude'][-1] == 'W' else 1)
+        
+        # Add marker to the map
         folium.CircleMarker(
-            [row['latitude'], row['longitude']],
-            radius=row['AverageTemperature'] / 2,
+            location=[latitude, longitude],
+            radius=5,  # Fixed radius for demonstration
             color='crimson',
             fill=True,
-            fill_color='crimson'
+            fill_color='crimson',
+            fill_opacity=0.7,
+            tooltip=f"{row['City']}, {row['Country']}: {row['AverageTemperature']}°C"
         ).add_to(m)
 
     folium_static(m)
-
-global_temp_map()
 
 #Function for When did global warming started?
 def global_warming_start():
@@ -150,7 +158,6 @@ def thanks_and_credits():
     st.title("Thanks and Credits")
     st.markdown("This application was developed by [Your Name]. Thanks to all the data providers and libraries used in this project.")
 
-
 # Main Script to Run the App
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "When Did Global Warming Start?", "Global Temp Map", "Thanks and Credits"))
@@ -167,4 +174,5 @@ elif page == "Global Temp Map":
     global_temp_map()
 elif page == "Thanks and Credits":
     thanks_and_credits()
+
 
