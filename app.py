@@ -66,8 +66,11 @@ def decadal_seasonal_trends():
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
+    # Filter the data to include only years from 1850 onwards
+    global_temp_country_filtered = global_temp_country_avg[global_temp_country_avg['year'] >= 1850]
+
     # Ensure the data is sorted by year
-    global_temp_country_sorted = global_temp_country_avg.sort_values('year')
+    global_temp_country_sorted = global_temp_country_filtered.sort_values('year')
 
     fig = px.choropleth(global_temp_country_sorted, 
                         locations="Country", 
