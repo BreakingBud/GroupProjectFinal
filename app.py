@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # Function to load and clean data (use Streamlit's cache mechanism for efficiency)
-@st.cache
+@st.cache_data
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
