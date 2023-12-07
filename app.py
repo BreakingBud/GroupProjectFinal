@@ -6,7 +6,7 @@ import folium
 from streamlit_folium import folium_static
 
 # Function to load and clean data
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
