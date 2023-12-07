@@ -51,8 +51,11 @@ def home():
 def global_land_avg_temp():
     st.title("Global Land Average Temperature Analysis")
     land_avg_temp_trend = global_temp.groupby('year')['LandAverageTemperature'].mean().reset_index()
-    fig = px.line(land_avg_temp_trend, x='year', y='LandAverageTemperature', title='Global Land Average Temperature Over Time',
-                  color_continuous_scale=px.colors.sequential.OrRd)
+    fig = px.line(land_avg_temp_trend, x='year', y='LandAverageTemperature', 
+                  title='Global Land Average Temperature Over Time',
+                  line_shape='linear', 
+                  line_dash_sequence=['solid'],
+                  color_discrete_sequence=['#FF5733'])  # Warm color for the line
     st.plotly_chart(fig)
 
 # Function for Decadal and Seasonal Temperature Trends with Warm Colors
