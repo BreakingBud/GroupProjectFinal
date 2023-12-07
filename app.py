@@ -149,7 +149,7 @@ def thanks_and_credits():
 
 # Main Script to Run the App
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "Global Temp Map", "When Did Global Warming Start?", "Thanks and Credits"))
+page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "When Did Global Warming Start?", "Global Temp Map", "Thanks and Credits"))
 
 if page == "Home":
     home()
@@ -157,9 +157,10 @@ elif page == "Global Land Avg Temp":
     global_land_avg_temp()
 elif page == "Decadal and Seasonal Trends":
     decadal_seasonal_trends()
-elif page == "Global Temp Map":
-    global_temp_map()
 elif page == "When Did Global Warming Start?":
     global_warming_start()
+elif page == "Global Temp Map":
+    global_temp_map()
 elif page == "Thanks and Credits":
     thanks_and_credits()
+
