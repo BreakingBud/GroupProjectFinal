@@ -58,18 +58,18 @@ def global_land_avg_temp():
                   color_discrete_sequence=['#FF5733'])  # Warm color for the line
     st.plotly_chart(fig)
 
-# Function for Decadal and Seasonal Temperature Trends with Warm Colors
+# Function for Decadal Trends with Warm Colors
 def decadal_seasonal_trends():
     st.title("Decadal and Seasonal Temperature Trends")
+
     # Decadal Analysis
     avg_temp_by_decade = global_temp.groupby('decade')['LandAverageTemperature'].mean().reset_index()
-    fig_decade = px.bar(avg_temp_by_decade, x='decade', y='LandAverageTemperature', color_continuous_scale=px.colors.sequential.OrRd)
+    st.write("Average Land Temperature by Decade")
+    fig_decade = px.bar(avg_temp_by_decade, x='decade', y='LandAverageTemperature',
+                        color='LandAverageTemperature',  # Coloring based on temperature
+                        color_continuous_scale=px.colors.sequential.YlOrRd)  # Warm color scale
     st.plotly_chart(fig_decade)
 
-    # Seasonal Analysis
-    avg_temp_by_month = global_temp.groupby('month')['LandAverageTemperature'].mean().reset_index()
-    fig_month = px.line(avg_temp_by_month, x='month', y='LandAverageTemperature', color_continuous_scale=px.colors.sequential.OrRd)
-    st.plotly_chart(fig_month)
 
 # Function for Interactive Global Temperature Map with Warm Colors
 def global_temp_map():
