@@ -211,7 +211,18 @@ def thanks_and_credits():
 
 # Main Script to Run the App
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "When Did Global Warming Start?", "Global Temp Map", "Thanks and Credits"))
+page = st.sidebar.radio(
+    "Go to", 
+    (
+        "Home", 
+        "Global Land Avg Temp", 
+        "Decadal and Seasonal Trends", 
+        "When Did Global Warming Start?", 
+        "Global Temp Map", 
+        "Compare City Temps",  # Add this line
+        "Thanks and Credits"
+    )
+)
 
 if page == "Home":
     home()
