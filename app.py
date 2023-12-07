@@ -33,17 +33,6 @@ global_temp_country, global_temp = load_data()
 # Function for Home Page with Background Image
 def home():
     st.title("Climate Data Analysis Application")
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("https://imgur.com/a/kFBSLmW");
-            background-size: cover;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
     st.write("This application provides an in-depth analysis of global temperature trends.")
     st.write("Explore various aspects of global climate change over time.")
 
