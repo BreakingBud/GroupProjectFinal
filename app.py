@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 # Function to load and clean data
-@st.cache(allow_output_mutation=True)
+@st.cache_data(allow_output_mutation=True)
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
