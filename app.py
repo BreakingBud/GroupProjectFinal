@@ -6,8 +6,8 @@ import plotly.graph_objects as go
 @st.cache
 def load_data():
     # Load datasets
-    global_temp_country = pd.read_csv("/mnt/data/GlobalLandTemperaturesByCountry.csv")
-    global_temp = pd.read_csv("/mnt/data/GlobalTemperatures.csv")
+    global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
+    global_temp = pd.read_csv("GlobalTemperatures.csv")
 
     # Convert date strings to datetime objects and extract year and month
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
