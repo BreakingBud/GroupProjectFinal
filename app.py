@@ -10,10 +10,6 @@ def load_data():
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
     global_temp = pd.read_csv("GlobalTemperatures.csv")
 
-    # Handling missing values
-    global_temp_country.dropna(subset=['AverageTemperature'], inplace=True)
-    global_temp.dropna(subset=['LandAverageTemperature'], inplace=True)
-
     # Convert date strings to datetime objects
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
     global_temp['dt'] = pd.to_datetime(global_temp['dt'])
