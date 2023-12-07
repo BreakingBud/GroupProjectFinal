@@ -35,7 +35,7 @@ def load_data():
 
 global_temp_country_avg, global_temp = load_data()
 
-# Function for Interactive Global Temperature Map using the preferred choropleth
+# Function for Interactive Global Temperature Map
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
@@ -53,9 +53,21 @@ def global_temp_map():
                         animation_frame="year",
                         color_continuous_scale=px.colors.sequential.OrRd)
 
+    # Update the layout to include country borders
+    fig.update_geos(
+        showcountries=True,
+        countrycolor="RebeccaPurple"
+    )
+
     # Update the layout to match your theme
-    fig.update_layout(title='Global Land Average Temperature Over Time',
-                      geo=dict(showframe=False, showcoastlines=False, projection_type='equirectangular'))
+    fig.update_layout(
+        title_text='Global Land Average Temperature Over Time',
+        geo=dict(
+            showframe=False, 
+            showcoastlines=False, 
+            projection_type='equirectangular'
+        )
+    )
 
     st.plotly_chart(fig)
 
