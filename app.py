@@ -75,27 +75,46 @@ def global_temp_map():
     # Ensure the data is sorted by year
     global_temp_country_sorted = global_temp_country_filtered.sort_values('year')
 
-    fig = px.choropleth(global_temp_country_sorted, 
-                        locations="Country", 
-                        locationmode='country names',
-                        color="AverageTemperature",
-                        hover_name="Country", 
-                        animation_frame="year",
-                        color_continuous_scale="Viridis",  # Changed to Viridis for better visual appeal
-                        projection="natural earth")  # Changed projection for aesthetic variation
+    # Create an empty figure
+    fig = go.Figure()
 
-    # Customizing the layout
+    # Add traces for each year
+    for year in global_temp_country_sorted['year'].unique():
+        df_year = global_temp_country_sorted[global_temp_country_sorted['year'] == year]
+        fig.add_trace(go.Choropleth(
+            locations=df_year['Country'],
+            z=df_year['AverageTemperature'],
+            locationmode='country names',
+            colorscale='Viridis',
+            marker_line_color='darkgray',
+            marker_line_width=0.5,
+            colorbar_title = 'Avg Temp',
+            name=str(year),
+            showscale=False
+        ))
+
+    # Update the layout
     fig.update_layout(
-        title_text = 'Global Average Temperatures (1850 - Present)',
-        title_x = 0.5,
+        title_text='Global Average Temperatures (1850 - Present)',
+        title_x=0.5,
         geo=dict(
-            showframe = False,
-            showcoastlines = False,
-            projection_type = 'equirectangular'
-        )
+            showframe=False,
+            showcoastlines=False,
+            projection_type='equirectangular'
+        ),
+        updatemenus=[dict(
+            type="buttons",
+            buttons=[dict(label="Play", method="animate", args=[None]),
+                     dict(label="Pause", method="animate", args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate")])]
+        )]
     )
 
+    # Define the animation
+    fig.update_frames(frame_redraw=True)
+
+    # Show the figure in Streamlit
     st.plotly_chart(fig)
+
 
 
 #Function for When did global warming started?
