@@ -37,7 +37,7 @@ def home():
         f"""
         <style>
         .stApp {{
-            background-image: url("backgroundimage.jpg");
+            background-image: url("https://github.com/BreakingBud/GroupProject/blob/main/backgroundimage.jpg");
             background-size: cover;
         }}
         </style>
