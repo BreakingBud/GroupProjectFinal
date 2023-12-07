@@ -85,7 +85,7 @@ def global_temp_map():
 
     st.plotly_chart(fig)
 
-# Function for "When Did Global Warming Start?" Page
+#Function for When did global warming started?
 def global_warming_start():
     st.title("When Did Global Warming Start?")
     st.markdown("""
@@ -122,8 +122,13 @@ def global_warming_start():
         column = 'LandAndOceanAverageTemperature'
         title = 'Land and Ocean Average Temperature Over Years'
 
-    # Add the trace to the figure
+    # Add the main trace to the figure
     fig.add_trace(go.Scatter(x=yearly_data['year'], y=yearly_data[column], mode='lines', name=option))
+
+    # Add a vertical line for the year 1975 (or any other significant year)
+    fig.add_trace(go.Scatter(x=[1975, 1975], y=[min(yearly_data[column]), max(yearly_data[column])], 
+                             mode="lines", line=go.scatter.Line(color="gray", width=2), 
+                             showlegend=False))
 
     # Update the layout
     fig.update_layout(
@@ -135,6 +140,7 @@ def global_warming_start():
 
     # Plot!
     st.plotly_chart(fig)
+
 
 # Main Script to Run the App
 st.sidebar.title("Navigation")
