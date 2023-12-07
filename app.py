@@ -1,13 +1,13 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
 
 # Function to load and clean data
-@st.cache_data
+@st.cache
 def load_data():
     # Load datasets
-    global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
-    global_temp = pd.read_csv("GlobalTemperatures.csv")
+    global_temp_country = pd.read_csv("/mnt/data/GlobalLandTemperaturesByCountry.csv")
+    global_temp = pd.read_csv("/mnt/data/GlobalTemperatures.csv")
 
     # Convert date strings to datetime objects and extract year and month
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
@@ -36,8 +36,10 @@ global_temp_country_avg, global_temp = load_data()
 # Function for Home Page
 def home():
     st.title("Climate Data Analysis Application")
-    st.write("This application provides an in-depth analysis of global temperature trends.")
-    st.write("Explore various aspects of global climate change over time.")
+    st.markdown("""
+    This application provides an in-depth analysis of global temperature trends.
+    Explore various aspects of global climate change over time.
+    """)
 
 # Function for Global Land Average Temperature Analysis
 def global_land_avg_temp():
@@ -85,23 +87,52 @@ def global_temp_map():
 # Function for "When Did Global Warming Start?" Page
 def global_warming_start():
     st.title("When Did Global Warming Start?")
+    st.markdown("""
+    Explore the changes in temperature measures over the years.
+    Select a temperature measure to see its trend.
+    """)
 
     # Dropdown for selecting the plot
     option = st.selectbox(
         'Choose a Temperature Measure',
-        ('Land Average Temperature', 'Land Min Temperature', 'Land Max Temperature', 'Land and Ocean Average Temperature')
+        ['Land Average Temperature', 'Land Min Temperature', 'Land Max Temperature', 'Land and Ocean Average Temperature']
     )
 
-    # Plot based on selection
-    if option == 'Land Average Temperature':
-        fig = px.line(global_temp, x='year', y='LandAverageTemperature', title='Land Average Temperature Over Years')
-    elif option == 'Land Min Temperature':
-        fig = px.line(global_temp, x='year', y='LandMinTemperature', title='Land Min Temperature Over Years')
-    elif option == 'Land Max Temperature':
-        fig = px.line(global_temp, x='year', y='LandMaxTemperature', title='Land Max Temperature Over Years')
-    else:
-        fig = px.line(global_temp, x='year', y='LandAndOceanAverageTemperature', title='Land and Ocean Average Temperature Over Years')
+    # Filter the data to include only years from 1850 onwards
+    filtered_data = global_temp[global_temp['year'] >= 1850]
 
+    # Group by year
+    yearly_data = filtered_data.groupby('year').mean().reset_index()
+
+    # Initialize a figure object
+    fig = go.Figure()
+
+    # Choose the column to plot based on the dropdown selection
+    if option == 'Land Average Temperature':
+        column = 'LandAverageTemperature'
+        title = 'Land Average Temperature Over Years'
+    elif option == 'Land Min Temperature':
+        column = 'LandMinTemperature'
+        title = 'Land Min Temperature Over Years'
+    elif option == 'Land Max Temperature':
+        column = 'LandMaxTemperature'
+        title = 'Land Max Temperature Over Years'
+    else:
+        column = 'LandAndOceanAverageTemperature'
+        title = 'Land and Ocean Average Temperature Over Years'
+
+    # Add the trace to the figure
+    fig.add_trace(go.Scatter(x=yearly_data['year'], y=yearly_data[column], mode='lines', name=option))
+
+    # Update the layout
+    fig.update_layout(
+        title=title,
+        xaxis_title='Year',
+        yaxis_title='Temperature (°C)',
+        template='plotly_dark'
+    )
+
+    # Plot!
     st.plotly_chart(fig)
 
 # Main Script to Run the App
