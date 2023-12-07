@@ -2,11 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import folium
-from streamlit_folium import folium_static
 
 # Function to load and clean data
-@st.cache_data
+@st.cache(allow_output_mutation=True)
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
@@ -24,7 +22,7 @@ def load_data():
 
     global_temp_city['dt'] = pd.to_datetime(global_temp_city['dt'])
     global_temp_city['year'] = global_temp_city['dt'].dt.year
-    
+
     # Clean 'GlobalLandTemperaturesByCountry.csv'
     global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
         ['Denmark', 'Antarctica', 'France', 'Europe', 'Netherlands',
@@ -39,6 +37,29 @@ def load_data():
     return global_temp_country_avg, global_temp, global_temp_city
 
 global_temp_country_avg, global_temp, global_temp_city = load_data()
+
+# Function for Interactive Global Temperature Map
+def global_temp_map():
+    st.title("Interactive Global Temperature Map")
+
+    # Aggregate the average temperature by country
+    average_temp_by_country = global_temp_city.groupby(['Country', 'Latitude', 'Longitude'])['AverageTemperature'].mean().reset_index()
+    
+    # Convert 'Latitude' and 'Longitude' to numerical values
+    average_temp_by_country['Latitude'] = average_temp_by_country['Latitude'].str[:-1].astype(float) * average_temp_by_country['Latitude'].str[-1].map({'N': 1, 'S': -1})
+    average_temp_by_country['Longitude'] = average_temp_by_country['Longitude'].str[:-1].astype(float) * average_temp_by_country['Longitude'].str[-1].map({'E': 1, 'W': -1})
+
+    fig = px.choropleth(average_temp_by_country,
+                        locations="Country",
+                        locationmode='country names',
+                        color="AverageTemperature",
+                        hover_name="Country",
+                        color_continuous_scale=px.colors.sequential.Plasma)
+
+    fig.update_layout(title='Average Land Temperature by Country',
+                      geo=dict(showframe=False, showcoastlines=False, projection_type='equirectangular'))
+
+    st.plotly_chart(fig)
 
 # Function for Home Page
 def home():
@@ -70,32 +91,6 @@ def decadal_seasonal_trends():
                         color='LandAverageTemperature', 
                         color_continuous_scale=px.colors.sequential.YlOrRd)
     st.plotly_chart(fig_decade)
-
-# Function for Interactive Global Temperature Map
-def global_temp_map():
-    st.title("Interactive Global Temperature Map")
-
-    # Creating a base map
-    m = folium.Map(location=[20, 0], zoom_start=2)
-
-    # Adding data as circles
-    for idx, row in global_temp_city.iterrows():
-        # Convert latitude and longitude
-        latitude = float(row['Latitude'][:-1]) * (-1 if row['Latitude'][-1] == 'S' else 1)
-        longitude = float(row['Longitude'][:-1]) * (-1 if row['Longitude'][-1] == 'W' else 1)
-        
-        # Add marker to the map
-        folium.CircleMarker(
-            location=[latitude, longitude],
-            radius=5,  # Fixed radius for demonstration
-            color='crimson',
-            fill=True,
-            fill_color='crimson',
-            fill_opacity=0.7,
-            tooltip=f"{row['City']}, {row['Country']}: {row['AverageTemperature']}°C"
-        ).add_to(m)
-
-    folium_static(m)
 
 #Function for When did global warming started?
 def global_warming_start():
