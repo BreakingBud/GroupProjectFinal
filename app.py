@@ -60,10 +60,10 @@ def decadal_seasonal_trends():
                         color_continuous_scale=px.colors.sequential.YlOrRd)  # Warm color scale
     st.plotly_chart(fig_decade)
 
-# Function for Interactive Global Temperature Map with Warm Colors
+# Function for Interactive Global Temperature Map
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
-    fig = px.choropleth(global_temp_country, 
+    fig = px.choropleth(global_temp_country_avg, 
                         locations="Country", 
                         locationmode='country names',
                         color="AverageTemperature",
