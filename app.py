@@ -13,25 +13,19 @@ def load_data():
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
     global_temp['dt'] = pd.to_datetime(global_temp['dt'])
 
-    # Extract year and month for further analysis
+    # Extract year for further analysis
     global_temp_country['year'] = global_temp_country['dt'].dt.year
-    global_temp['year'] = global_temp['dt'].dt.year
-    global_temp['month'] = global_temp['dt'].dt.month
 
-    # Grouping global temp data by decade
-    global_temp['decade'] = (global_temp['year'] // 10) * 10
-
-    # Cleaning 'GlobalLandTemperaturesByCountry.csv'
+    # Clean 'GlobalLandTemperaturesByCountry.csv'
     global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
         ['Denmark', 'Antarctica', 'France', 'Europe', 'Netherlands',
          'United Kingdom', 'Africa', 'South America'])]
-
     global_temp_country_clear = global_temp_country_clear.replace(
         ['Denmark (Europe)', 'France (Europe)', 'Netherlands (Europe)', 'United Kingdom (Europe)'],
         ['Denmark', 'France', 'Netherlands', 'United Kingdom'])
 
-    # Calculate average temperature for each country
-    global_temp_country_avg = global_temp_country_clear.groupby('Country')['AverageTemperature'].mean().reset_index()
+    # Calculate average temperature for each country by year
+    global_temp_country_avg = global_temp_country_clear.groupby(['Country', 'year'])['AverageTemperature'].mean().reset_index()
 
     return global_temp_country_avg, global_temp
 
