@@ -2,19 +2,21 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Function to load and clean data (use Streamlit's cache mechanism for efficiency)
-@st.cache_data
+# Function to load and clean data
+@st.cache
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
     global_temp = pd.read_csv("GlobalTemperatures.csv")
 
-    # Convert date strings to datetime objects
+    # Convert date strings to datetime objects and extract year and month
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
-    global_temp['dt'] = pd.to_datetime(global_temp['dt'])
-
-    # Extract year for further analysis
     global_temp_country['year'] = global_temp_country['dt'].dt.year
+
+    global_temp['dt'] = pd.to_datetime(global_temp['dt'])
+    global_temp['year'] = global_temp['dt'].dt.year
+    global_temp['month'] = global_temp['dt'].dt.month
+    global_temp['decade'] = (global_temp['year'] // 10) * 10
 
     # Clean 'GlobalLandTemperaturesByCountry.csv'
     global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
@@ -31,7 +33,7 @@ def load_data():
 
 global_temp_country_avg, global_temp = load_data()
 
-# Function for Home Page with Background Image
+# Function for Home Page
 def home():
     st.title("Climate Data Analysis Application")
     st.write("This application provides an in-depth analysis of global temperature trends.")
@@ -45,10 +47,10 @@ def global_land_avg_temp():
                   title='Global Land Average Temperature Over Time',
                   line_shape='linear', 
                   line_dash_sequence=['solid'],
-                  color_discrete_sequence=['#FF5733'])  # Warm color for the line
+                  color_discrete_sequence=['#FF5733'])
     st.plotly_chart(fig)
 
-# Function for Decadal Trends with Warm Colors
+# Function for Decadal Trends
 def decadal_seasonal_trends():
     st.title("Decadal and Seasonal Temperature Trends")
 
@@ -56,8 +58,8 @@ def decadal_seasonal_trends():
     avg_temp_by_decade = global_temp.groupby('decade')['LandAverageTemperature'].mean().reset_index()
     st.write("Average Land Temperature by Decade")
     fig_decade = px.bar(avg_temp_by_decade, x='decade', y='LandAverageTemperature',
-                        color='LandAverageTemperature',  # Coloring based on temperature
-                        color_continuous_scale=px.colors.sequential.YlOrRd)  # Warm color scale
+                        color='LandAverageTemperature', 
+                        color_continuous_scale=px.colors.sequential.YlOrRd)
     st.plotly_chart(fig_decade)
 
 # Function for Interactive Global Temperature Map
