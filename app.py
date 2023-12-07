@@ -30,14 +30,14 @@ def load_data():
 
 global_temp_country, global_temp = load_data()
 
-# Function for Home Page
+# Function for Home Page with Background Image
 def home():
     st.title("Climate Data Analysis Application")
     st.markdown(
         f"""
         <style>
         .stApp {{
-            background-image: url("https://github.com/BreakingBud/GroupProject/blob/main/backgroundimage.jpg");
+            background-image: url("https://imgur.com/a/kFBSLmW");
             background-size: cover;
         }}
         </style>
@@ -47,29 +47,28 @@ def home():
     st.write("This application provides an in-depth analysis of global temperature trends.")
     st.write("Explore various aspects of global climate change over time.")
 
-# Function for Global Land Average Temperature Analysis
+# Function for Global Land Average Temperature Analysis with Warm Colors
 def global_land_avg_temp():
     st.title("Global Land Average Temperature Analysis")
     land_avg_temp_trend = global_temp.groupby('year')['LandAverageTemperature'].mean().reset_index()
-    fig = px.line(land_avg_temp_trend, x='year', y='LandAverageTemperature', title='Global Land Average Temperature Over Time')
+    fig = px.line(land_avg_temp_trend, x='year', y='LandAverageTemperature', title='Global Land Average Temperature Over Time',
+                  color_continuous_scale=px.colors.sequential.OrRd)
     st.plotly_chart(fig)
 
-# Function for Decadal and Seasonal Temperature Trends
+# Function for Decadal and Seasonal Temperature Trends with Warm Colors
 def decadal_seasonal_trends():
     st.title("Decadal and Seasonal Temperature Trends")
     # Decadal Analysis
     avg_temp_by_decade = global_temp.groupby('decade')['LandAverageTemperature'].mean().reset_index()
-    st.write("Average Land Temperature by Decade")
-    fig_decade = px.bar(avg_temp_by_decade, x='decade', y='LandAverageTemperature')
+    fig_decade = px.bar(avg_temp_by_decade, x='decade', y='LandAverageTemperature', color_continuous_scale=px.colors.sequential.OrRd)
     st.plotly_chart(fig_decade)
 
     # Seasonal Analysis
-    st.write("Seasonal Patterns in Global Temperatures")
-    avg_temp_by_month = global_temp.groupby('month')['LandAverageTemperature']. mean().reset_index()
-    fig_month = px.line(avg_temp_by_month, x='month', y='LandAverageTemperature')
+    avg_temp_by_month = global_temp.groupby('month')['LandAverageTemperature'].mean().reset_index()
+    fig_month = px.line(avg_temp_by_month, x='month', y='LandAverageTemperature', color_continuous_scale=px.colors.sequential.OrRd)
     st.plotly_chart(fig_month)
 
-# Function for Interactive Global Temperature Map
+# Function for Interactive Global Temperature Map with Warm Colors
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
     fig = px.choropleth(global_temp_country, 
@@ -77,7 +76,8 @@ def global_temp_map():
                         locationmode='country names',
                         color="AverageTemperature",
                         hover_name="Country", 
-                        animation_frame="year")
+                        animation_frame="year",
+                        color_continuous_scale=px.colors.sequential.OrRd)
     st.plotly_chart(fig)
 
 # Main Script to Run the App
