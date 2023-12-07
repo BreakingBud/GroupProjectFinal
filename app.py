@@ -206,26 +206,34 @@ def compare_city_temps(city_yearly_avg_temp):
 #Function for thanks page
 def thanks_and_credits():
     st.title("Thanks and Credits")
-    st.markdown("This application was developed by [Your Name]. Thanks to all the data providers and libraries used in this project.")
+    st.markdown("This application was developed by Group 5. Thanks to all the data providers, researchers and users of this project.")
 
-# Update the Navigation with arrows at the top and bottom
-st.title("Navigation")
+# Navigation in the sidebar
+st.sidebar.title("Navigation")
+page = st.sidebar.radio(
+    "Go to",
+    (
+        "Home",
+        "Global Land Avg Temp",
+        "Decadal and Seasonal Trends",
+        "When Did Global Warming Start?",
+        "Global Temp Map",
+        "Compare City Temps",
+        "Thanks and Credits"
+    )
+)
 
-# Add arrows for navigation
-col1, col2, col3 = st.beta_columns(3)
-arrow_left = col1.button("← Previous Page")
-arrow_right = col3.button("Next Page →")
-
-# Handle navigation logic
-current_page = st.session_state.get("current_page", 0)
-
-if arrow_left and current_page > 0:
-    st.session_state["current_page"] -= 1
-elif arrow_right and current_page < len(pages) - 1:
-    st.session_state["current_page"] += 1
-
-# Define the pages
-pages = [home, global_land_avg_temp, decadal_seasonal_trends, global_warming_start, global_temp_map, compare_city_temps, thanks_and_credits]
-
-# Show the current page
-pages[current_page]()
+if page == "Home":
+    home()
+elif page == "Global Land Avg Temp":
+    global_land_avg_temp()
+elif page == "Decadal and Seasonal Trends":
+    decadal_seasonal_trends()
+elif page == "When Did Global Warming Start?":
+    global_warming_start()
+elif page == "Global Temp Map":
+    global_temp_map()
+elif page == "Compare City Temps":
+    compare_city_temps(city_yearly_avg_temp) 
+elif page == "Thanks and Credits":
+    thanks_and_credits()
