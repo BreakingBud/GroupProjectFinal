@@ -65,13 +65,18 @@ def decadal_seasonal_trends():
 # Function for Interactive Global Temperature Map
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
-    fig = px.choropleth(global_temp_country_avg, 
+
+    # Ensure the data is sorted by year
+    global_temp_country_sorted = global_temp_country_avg.sort_values('year')
+
+    fig = px.choropleth(global_temp_country_sorted, 
                         locations="Country", 
                         locationmode='country names',
                         color="AverageTemperature",
                         hover_name="Country", 
                         animation_frame="year",
                         color_continuous_scale=px.colors.sequential.OrRd)
+
     st.plotly_chart(fig)
 
 # Function for Thanks and Credits Page
