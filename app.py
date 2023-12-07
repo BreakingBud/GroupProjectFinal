@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+import folium
+from streamlit_folium import folium_static
+import pandas as pd
 
 # Function to load and clean data
 @st.cache_data
@@ -69,53 +72,22 @@ def decadal_seasonal_trends():
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
-    # Filter the data to include only years from 1850 onwards
-    global_temp_country_filtered = global_temp_country_avg[global_temp_country_avg['year'] >= 1850]
+    # Creating a base map
+    m = folium.Map(location=[20, 0], zoom_start=2)
 
-    # Ensure the data is sorted by year
-    global_temp_country_sorted = global_temp_country_filtered.sort_values('year')
+    # Adding data as circles
+    for idx, row in global_temp_country_avg.iterrows():
+        folium.CircleMarker(
+            [row['latitude'], row['longitude']],
+            radius=row['AverageTemperature'] / 2,
+            color='crimson',
+            fill=True,
+            fill_color='crimson'
+        ).add_to(m)
 
-    # Create an empty figure
-    fig = go.Figure()
+    folium_static(m)
 
-    # Add traces for each year
-    for year in global_temp_country_sorted['year'].unique():
-        df_year = global_temp_country_sorted[global_temp_country_sorted['year'] == year]
-        fig.add_trace(go.Choropleth(
-            locations=df_year['Country'],
-            z=df_year['AverageTemperature'],
-            locationmode='country names',
-            colorscale='Viridis',
-            marker_line_color='darkgray',
-            marker_line_width=0.5,
-            colorbar_title = 'Avg Temp',
-            name=str(year),
-            showscale=False
-        ))
-
-    # Update the layout
-    fig.update_layout(
-        title_text='Global Average Temperatures (1850 - Present)',
-        title_x=0.5,
-        geo=dict(
-            showframe=False,
-            showcoastlines=False,
-            projection_type='equirectangular'
-        ),
-        updatemenus=[dict(
-            type="buttons",
-            buttons=[dict(label="Play", method="animate", args=[None]),
-                     dict(label="Pause", method="animate", args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate")])]
-        )]
-    )
-
-    # Define the animation
-    fig.update_frames(frame_redraw=True)
-
-    # Show the figure in Streamlit
-    st.plotly_chart(fig)
-
-
+global_temp_map()
 
 #Function for When did global warming started?
 def global_warming_start():
