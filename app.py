@@ -141,6 +141,11 @@ def global_warming_start():
     # Plot!
     st.plotly_chart(fig)
 
+#Function for thanks page
+def thanks_and_credits():
+    st.title("Thanks and Credits")
+    st.markdown("This application was developed by [Your Name]. Thanks to all the data providers and libraries used in this project.")
+
 
 # Main Script to Run the App
 st.sidebar.title("Navigation")
