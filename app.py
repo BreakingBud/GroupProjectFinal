@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Function to load and clean data
-@st.cache
+@st.cache_data
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
