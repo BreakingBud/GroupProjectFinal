@@ -1,12 +1,11 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import seaborn as sns
-import matplotlib.pyplot as plt
 
-# Function to load data (use Streamlit's cache mechanism for efficiency)
-@st.cache_data
+# Function to load and clean data (use Streamlit's cache mechanism for efficiency)
+@st.cache
 def load_data():
+    # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
     global_temp = pd.read_csv("GlobalTemperatures.csv")
 
@@ -19,12 +18,24 @@ def load_data():
     global_temp['year'] = global_temp['dt'].dt.year
     global_temp['month'] = global_temp['dt'].dt.month
 
-    # Grouping data by decade
+    # Grouping global temp data by decade
     global_temp['decade'] = (global_temp['year'] // 10) * 10
 
-    return global_temp_country, global_temp
+    # Cleaning 'GlobalLandTemperaturesByCountry.csv'
+    global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
+        ['Denmark', 'Antarctica', 'France', 'Europe', 'Netherlands',
+         'United Kingdom', 'Africa', 'South America'])]
 
-global_temp_country, global_temp = load_data()
+    global_temp_country_clear = global_temp_country_clear.replace(
+        ['Denmark (Europe)', 'France (Europe)', 'Netherlands (Europe)', 'United Kingdom (Europe)'],
+        ['Denmark', 'France', 'Netherlands', 'United Kingdom'])
+
+    # Calculate average temperature for each country
+    global_temp_country_avg = global_temp_country_clear.groupby('Country')['AverageTemperature'].mean().reset_index()
+
+    return global_temp_country_avg, global_temp
+
+global_temp_country_avg, global_temp = load_data()
 
 # Function for Home Page with Background Image
 def home():
@@ -32,7 +43,7 @@ def home():
     st.write("This application provides an in-depth analysis of global temperature trends.")
     st.write("Explore various aspects of global climate change over time.")
 
-# Function for Global Land Average Temperature Analysis with Warm Colors
+# Function for Global Land Average Temperature Analysis
 def global_land_avg_temp():
     st.title("Global Land Average Temperature Analysis")
     land_avg_temp_trend = global_temp.groupby('year')['LandAverageTemperature'].mean().reset_index()
@@ -55,11 +66,10 @@ def decadal_seasonal_trends():
                         color_continuous_scale=px.colors.sequential.YlOrRd)  # Warm color scale
     st.plotly_chart(fig_decade)
 
-
-# Function for Interactive Global Temperature Map with Warm Colors
+# Function for Interactive Global Temperature Map
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
-    fig = px.choropleth(global_temp_country, 
+    fig = px.choropleth(global_temp_country_avg, 
                         locations="Country", 
                         locationmode='country names',
                         color="AverageTemperature",
@@ -68,9 +78,18 @@ def global_temp_map():
                         color_continuous_scale=px.colors.sequential.OrRd)
     st.plotly_chart(fig)
 
+# Function for Thanks and Credits Page
+def thanks_and_credits():
+    st.title("Thanks and Credits")
+    st.write("Thank you for exploring our Climate Data Analysis Application.")
+    st.write("## Credits:")
+    st.write("Data Source: Kaggle's Global Land and Ocean-and-Land Temperatures dataset.")
+    st.write("Developed by: [Your Name/Team Name]")
+    st.write("Special thanks to all contributors and data scientists working towards understanding climate change.")
+
 # Main Script to Run the App
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "Global Temp Map"))
+page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "Global Temp Map", "Thanks and Credits"))
 
 if page == "Home":
     home()
@@ -80,3 +99,5 @@ elif page == "Decadal and Seasonal Trends":
     decadal_seasonal_trends()
 elif page == "Global Temp Map":
     global_temp_map()
+elif page == "Thanks and Credits":
+    thanks_and_credits()
