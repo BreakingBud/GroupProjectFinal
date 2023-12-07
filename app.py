@@ -170,9 +170,9 @@ def global_warming_start():
 
     # Plot!
     st.plotly_chart(fig)
-
+    
 # Function for Comparing City Temperature Trends
-def compare_city_temps():
+def compare_city_temps(city_yearly_avg_temp):
     st.title("Compare City Temperature Trends")
 
     # Get the unique list of cities
@@ -202,7 +202,7 @@ def compare_city_temps():
     )
 
     st.plotly_chart(fig)
-    
+
 #Function for thanks page
 def thanks_and_credits():
     st.title("Thanks and Credits")
@@ -233,7 +233,7 @@ elif page == "When Did Global Warming Start?":
 elif page == "Global Temp Map":
     global_temp_map()
 elif page == "Compare City Temps":
-    compare_city_temps(city_yearly_avg_temp)
+    compare_city_temps(city_yearly_avg_temp) 
 elif page == "Thanks and Credits":
     thanks_and_credits()
 
