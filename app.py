@@ -82,18 +82,31 @@ def global_temp_map():
 
     st.plotly_chart(fig)
 
-# Function for Thanks and Credits Page
-def thanks_and_credits():
-    st.title("Thanks and Credits")
-    st.write("Thank you for exploring our Climate Data Analysis Application.")
-    st.write("## Credits:")
-    st.write("Data Source: Kaggle's Global Land and Ocean-and-Land Temperatures dataset.")
-    st.write("Developed by: [Your Name/Team Name]")
-    st.write("Special thanks to all contributors and data scientists working towards understanding climate change.")
+# Function for "When Did Global Warming Start?" Page
+def global_warming_start():
+    st.title("When Did Global Warming Start?")
+
+    # Dropdown for selecting the plot
+    option = st.selectbox(
+        'Choose a Temperature Measure',
+        ('Land Average Temperature', 'Land Min Temperature', 'Land Max Temperature', 'Land and Ocean Average Temperature')
+    )
+
+    # Plot based on selection
+    if option == 'Land Average Temperature':
+        fig = px.line(global_temp, x='year', y='LandAverageTemperature', title='Land Average Temperature Over Years')
+    elif option == 'Land Min Temperature':
+        fig = px.line(global_temp, x='year', y='LandMinTemperature', title='Land Min Temperature Over Years')
+    elif option == 'Land Max Temperature':
+        fig = px.line(global_temp, x='year', y='LandMaxTemperature', title='Land Max Temperature Over Years')
+    else:
+        fig = px.line(global_temp, x='year', y='LandAndOceanAverageTemperature', title='Land and Ocean Average Temperature Over Years')
+
+    st.plotly_chart(fig)
 
 # Main Script to Run the App
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "Global Temp Map", "Thanks and Credits"))
+page = st.sidebar.radio("Go to", ("Home", "Global Land Avg Temp", "Decadal and Seasonal Trends", "Global Temp Map", "When Did Global Warming Start?", "Thanks and Credits"))
 
 if page == "Home":
     home()
@@ -103,5 +116,7 @@ elif page == "Decadal and Seasonal Trends":
     decadal_seasonal_trends()
 elif page == "Global Temp Map":
     global_temp_map()
+elif page == "When Did Global Warming Start?":
+    global_warming_start()
 elif page == "Thanks and Credits":
     thanks_and_credits()
