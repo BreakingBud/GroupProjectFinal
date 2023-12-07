@@ -39,32 +39,37 @@ global_temp_country_avg, global_temp = load_data()
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
-    # Filter the data to include only years from 1850 onwards
-    global_temp_country_filtered = global_temp_country_avg[global_temp_country_avg['year'] >= 1850]
+    # Filter the data to include only years from 1850 onwards and drop NaN values
+    global_temp_country_filtered = global_temp_country_avg[global_temp_country_avg['year'] >= 1850].dropna(subset=['AverageTemperature'])
 
     # Ensure the data is sorted by year
     global_temp_country_sorted = global_temp_country_filtered.sort_values('year')
 
-    fig = px.choropleth(global_temp_country_sorted, 
-                        locations="Country", 
+    # Define the color scale to use for the choropleth
+    color_scale = px.colors.sequential.OrRd
+
+    fig = px.choropleth(global_temp_country_sorted,
+                        locations="Country",
                         locationmode='country names',
                         color="AverageTemperature",
-                        hover_name="Country", 
+                        hover_name="Country",
                         animation_frame="year",
-                        color_continuous_scale=px.colors.sequential.OrRd)
+                        color_continuous_scale=color_scale,
+                        range_color=(global_temp_country_sorted['AverageTemperature'].min(),
+                                     global_temp_country_sorted['AverageTemperature'].max()))
 
     # Update the layout to include country borders
     fig.update_geos(
         showcountries=True,
-        countrycolor="RebeccaPurple"
+        countrycolor="Black"  # Set border color to black for visibility
     )
 
     # Update the layout to match your theme
     fig.update_layout(
         title_text='Global Land Average Temperature Over Time',
         geo=dict(
-            showframe=False, 
-            showcoastlines=False, 
+            showframe=False,
+            showcoastlines=False,
             projection_type='equirectangular'
         )
     )
