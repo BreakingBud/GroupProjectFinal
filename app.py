@@ -41,8 +41,7 @@ def load_data():
     return global_temp_country_avg, global_temp, global_temp_city_avg
 
 # Call the load_data function to load all datasets
-global_temp_country_avg, global_temp, global_temp_city_avg = load_data()
-
+global_temp_country_avg, global_temp, city_yearly_avg_temp = load_data()
 
 # Function for Interactive Global Temperature Map
 def global_temp_map():
@@ -208,18 +207,17 @@ def compare_city_temps():
 def thanks_and_credits():
     st.title("Thanks and Credits")
     st.markdown("This application was developed by [Your Name]. Thanks to all the data providers and libraries used in this project.")
-
-# Main Script to Run the App
+# Update the Navigation in the sidebar
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
-    "Go to", 
+    "Go to",
     (
-        "Home", 
-        "Global Land Avg Temp", 
-        "Decadal and Seasonal Trends", 
-        "When Did Global Warming Start?", 
-        "Global Temp Map", 
-        "Compare City Temps",  # Add this line
+        "Home",
+        "Global Land Avg Temp",
+        "Decadal and Seasonal Trends",
+        "When Did Global Warming Start?",
+        "Global Temp Map",
+        "Compare City Temps",
         "Thanks and Credits"
     )
 )
@@ -235,7 +233,7 @@ elif page == "When Did Global Warming Start?":
 elif page == "Global Temp Map":
     global_temp_map()
 elif page == "Compare City Temps":
-    compare_city_temps()
+    compare_city_temps(city_yearly_avg_temp)
 elif page == "Thanks and Credits":
     thanks_and_credits()
 
