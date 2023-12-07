@@ -5,11 +5,11 @@ import plotly.express as px
 
 # Function to load and clean data
 @st.cache_data
+
 def load_data():
     # Load datasets
     global_temp_country = pd.read_csv("GlobalLandTemperaturesByCountry.csv")
     global_temp = pd.read_csv("GlobalTemperatures.csv")
-    global_temp_city = pd.read_csv("GlobalLandTemperaturesByMajorCity.csv")
 
     # Convert date strings to datetime objects and extract year and month
     global_temp_country['dt'] = pd.to_datetime(global_temp_country['dt'])
@@ -19,9 +19,6 @@ def load_data():
     global_temp['year'] = global_temp['dt'].dt.year
     global_temp['month'] = global_temp['dt'].dt.month
     global_temp['decade'] = (global_temp['year'] // 10) * 10
-
-    global_temp_city['dt'] = pd.to_datetime(global_temp_city['dt'])
-    global_temp_city['year'] = global_temp_city['dt'].dt.year
 
     # Clean 'GlobalLandTemperaturesByCountry.csv'
     global_temp_country_clear = global_temp_country[~global_temp_country['Country'].isin(
@@ -34,29 +31,30 @@ def load_data():
     # Calculate average temperature for each country by year
     global_temp_country_avg = global_temp_country_clear.groupby(['Country', 'year'])['AverageTemperature'].mean().reset_index()
 
-    return global_temp_country_avg, global_temp, global_temp_city
+    return global_temp_country_avg, global_temp
 
-global_temp_country_avg, global_temp, global_temp_city = load_data()
+global_temp_country_avg, global_temp = load_data()
 
-# Function for Interactive Global Temperature Map
+# Function for Interactive Global Temperature Map using the preferred choropleth
 def global_temp_map():
     st.title("Interactive Global Temperature Map")
 
-    # Aggregate the average temperature by country
-    average_temp_by_country = global_temp_city.groupby(['Country', 'Latitude', 'Longitude'])['AverageTemperature'].mean().reset_index()
-    
-    # Convert 'Latitude' and 'Longitude' to numerical values
-    average_temp_by_country['Latitude'] = average_temp_by_country['Latitude'].str[:-1].astype(float) * average_temp_by_country['Latitude'].str[-1].map({'N': 1, 'S': -1})
-    average_temp_by_country['Longitude'] = average_temp_by_country['Longitude'].str[:-1].astype(float) * average_temp_by_country['Longitude'].str[-1].map({'E': 1, 'W': -1})
+    # Filter the data to include only years from 1850 onwards
+    global_temp_country_filtered = global_temp_country_avg[global_temp_country_avg['year'] >= 1850]
 
-    fig = px.choropleth(average_temp_by_country,
-                        locations="Country",
+    # Ensure the data is sorted by year
+    global_temp_country_sorted = global_temp_country_filtered.sort_values('year')
+
+    fig = px.choropleth(global_temp_country_sorted, 
+                        locations="Country", 
                         locationmode='country names',
                         color="AverageTemperature",
-                        hover_name="Country",
-                        color_continuous_scale=px.colors.sequential.Plasma)
+                        hover_name="Country", 
+                        animation_frame="year",
+                        color_continuous_scale=px.colors.sequential.OrRd)
 
-    fig.update_layout(title='Average Land Temperature by Country',
+    # Update the layout to match your theme
+    fig.update_layout(title='Global Land Average Temperature Over Time',
                       geo=dict(showframe=False, showcoastlines=False, projection_type='equirectangular'))
 
     st.plotly_chart(fig)
